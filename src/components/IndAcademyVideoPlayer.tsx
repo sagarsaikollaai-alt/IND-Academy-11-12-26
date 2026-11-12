@@ -746,7 +746,9 @@ export const IndAcademyVideoPlayer: React.FC<IndAcademyVideoPlayerProps> = ({
         ) : null
       ) : hasRequestedPlay ? (
         <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
-          <div ref={ytMountRef} className="w-full h-full" />
+          <div className="absolute left-0 -top-[100%] w-full h-[300%] pointer-events-none [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0">
+            <div ref={ytMountRef} className="w-full h-full" />
+          </div>
         </div>
       ) : null}
 
@@ -781,17 +783,19 @@ export const IndAcademyVideoPlayer: React.FC<IndAcademyVideoPlayerProps> = ({
         </div>
       )}
 
-      {/* 3. TOP-LEFT IND ACADEMY BRANDING (Always visible, #171717 background, #C6A15B gold accent, #FFFFFF text) */}
-      <div className="absolute top-2.5 left-2.5 md:top-5 md:left-6 z-20 pointer-events-none flex items-center gap-2 md:gap-2.5 px-2.5 py-1 md:px-3.5 md:py-1.5 rounded-lg md:rounded-xl bg-[#171717]/90 backdrop-blur-md border border-[#C6A15B]/45 opacity-100">
-        <img
-          src={BRAND_ASSETS.indAcademyLogo}
-          alt="IND Academy"
-          className="h-3.5 md:h-5 w-auto object-contain"
-        />
-        <span className="text-[9px] md:text-[11px] font-semibold uppercase tracking-[0.14em] md:tracking-[0.18em] text-[#C6A15B]">
-          IND ACADEMY
-        </span>
-      </div>
+      {/* 3. TOP-LEFT IND ACADEMY BRANDING (Shown only on pre-play/paused thumbnail preview; hidden during active video playback so only the clean video plays) */}
+      {!hasStarted && (
+        <div className="absolute top-2.5 left-2.5 md:top-5 md:left-6 z-20 pointer-events-none flex items-center gap-2 md:gap-2.5 px-2.5 py-1 md:px-3.5 md:py-1.5 rounded-lg md:rounded-xl bg-[#171717]/90 backdrop-blur-md border border-[#C6A15B]/45 transition-opacity duration-300">
+          <img
+            src={BRAND_ASSETS.indAcademyLogo}
+            alt="IND Academy"
+            className="h-3.5 md:h-5 w-auto object-contain"
+          />
+          <span className="text-[9px] md:text-[11px] font-semibold uppercase tracking-[0.14em] md:tracking-[0.18em] text-[#C6A15B]">
+            IND ACADEMY
+          </span>
+        </div>
+      )}
 
       {/* 4. CENTER CHAMPAGNE GOLD (#C6A15B) CIRCULAR PLAY / PAUSE BUTTON WITH BLACK (#171717) ICON */}
       {!isEnded && !resolvedBunnyEmbedUrl && (

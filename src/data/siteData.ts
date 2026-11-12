@@ -1,3 +1,11 @@
+import indAcademyLogoImg from '../assets/images/image_587046e6.png';
+import brightlumeLogoImg from '../assets/images/brightlume-logo_57c794bf.png';
+import heroStudentImg from '../assets/images/hero_student_professional_1794311619339.jpg';
+import digitalMarketingImg from '../assets/images/course_digital_marketing_1794311618280.jpg';
+import codingImg from '../assets/images/course_coding_dev_1794311620521.jpg';
+import aiImg from '../assets/images/course_ai_workflows_1794311621866.jpg';
+import classroomImg from '../assets/images/classroom_offline_learning_1794311625091.jpg';
+
 export type PageId =
   | 'home'
   | 'catalogue'
@@ -78,18 +86,15 @@ export interface CourseData {
 }
 
 export const BRAND_ASSETS = {
-  indAcademyLogo: '/assets/aistudio/image_587046e6.png',
-  brightlumeLogo: '/assets/aistudio/brightlume-logo_57c794bf.png',
-  heroStudentImage:
-    '/src/assets/images/hero_student_professional_1794311619339.jpg',
-  digitalMarketingImage:
-    '/src/assets/images/course_digital_marketing_1794311618280.jpg',
-  codingImage: '/src/assets/images/course_coding_dev_1794311620521.jpg',
-  aiImage: '/src/assets/images/course_ai_workflows_1794311621866.jpg',
+  indAcademyLogo: indAcademyLogoImg,
+  brightlumeLogo: brightlumeLogoImg,
+  heroStudentImage: heroStudentImg,
+  digitalMarketingImage: digitalMarketingImg,
+  codingImage: codingImg,
+  aiImage: aiImg,
   videoEditingImage:
     'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=1400&q=85',
-  classroomImage:
-    '/src/assets/images/classroom_offline_learning_1794311625091.jpg',
+  classroomImage: classroomImg,
 };
 
 /**
@@ -100,7 +105,7 @@ export const HERO_VIDEO_CONFIG = {
     'https://assets.mixkit.co/videos/preview/mixkit-woman-working-on-her-laptop-in-a-modern-office-41760-large.mp4',
   webmUrl:
     'https://assets.mixkit.co/videos/preview/mixkit-woman-working-on-her-laptop-in-a-modern-office-41760-large.mp4',
-  posterUrl: '/src/assets/images/hero_student_professional_1794311619339.jpg',
+  posterUrl: heroStudentImg,
   caption: 'Placeholder Studio Loop — Replace in src/data/siteData.ts',
 };
 
