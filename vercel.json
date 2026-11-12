@@ -1,5 +1,5 @@
 {
-  "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true npm run build",
+  "installCommand": "env -u npm_config_cache_dir -u NPM_CONFIG_CACHE_DIR npm install --legacy-peer-deps",
+  "buildCommand": "env -u npm_config_cache_dir -u NPM_CONFIG_CACHE_DIR VITE_CONFIG_NATIVE_IGNORE_WARNING=true npm run build",
   "outputDirectory": "dist"
 }
