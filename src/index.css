@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
+  --font-mono: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
 }
 
 @layer base {
@@ -20,29 +21,36 @@
 
   html {
     scroll-behavior: smooth;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
     font-weight: 400;
     font-size: 16px;
     background-color: #F8F6F0;
     color: #171717;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
     font-weight: 400;
-    font-size: 1.0625rem; /* 17px body copy */
-    line-height: 1.65;
+    font-size: 1.0625rem;
+    line-height: 1.6;
     overflow-x: hidden;
     font-style: normal;
   }
 
-  /* Upright Playfair Display (500-600) for all Headings — Never Italic */
+  /* FONT 1: Playfair Display (The "Course Brochure" font) for all Headings & nested heading spans */
   h1,
   h2,
   h3,
   .font-display-serif,
-  .font-serif-editorial {
-    font-family: 'Playfair Display', Georgia, serif;
+  .font-serif-editorial,
+  h1 span:not(.small-gold-label),
+  h2 span:not(.small-gold-label),
+  h3 span:not(.small-gold-label),
+  .font-display-serif span:not(.small-gold-label),
+  .font-serif-editorial span:not(.small-gold-label) {
+    font-family: 'Playfair Display', Georgia, serif !important;
     font-weight: 500;
     font-style: normal !important;
     line-height: 1.1;
@@ -50,7 +58,7 @@
     text-wrap: balance;
   }
 
-  /* Clean Inter for Body, Navigation, Buttons, and Labels */
+  /* FONT 2: Apple Font (-apple-system / SF Pro) for all casual writing, body copy, buttons, and UI labels */
   h4,
   h5,
   h6,
@@ -61,10 +69,10 @@
   select,
   textarea,
   label,
-  span,
   li,
-  .font-sans-ui {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  .font-sans-ui,
+  .small-gold-label {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif !important;
     font-style: normal !important;
   }
 
@@ -88,18 +96,17 @@
   }
 
   .small-gold-label {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.2em;
-    font-size: 0.75rem; /* 12px */
+    font-size: 0.75rem;
   }
 
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
 
-  /* Dedicated Mobile Typography & Rhythm System (320px–767px only; Tablet & Desktop untouched) */
+  /* Mobile Typography Scale (< 768px) — Strictly uses the same 2 fonts (Playfair Display + Apple Font) */
   @media (max-width: 767px) {
     html,
     body {
@@ -108,43 +115,44 @@
     }
 
     body {
-      font-size: 0.96875rem; /* 15.5px (15–16px range) mobile body copy */
-      line-height: 1.6;
+      font-size: 0.96875rem;
+      line-height: 1.55;
     }
 
     h1,
     h2,
     h3,
     .font-display-serif,
-    .font-serif-editorial {
-      font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-      font-weight: 600;
+    .font-serif-editorial,
+    h1 span:not(.small-gold-label),
+    h2 span:not(.small-gold-label),
+    h3 span:not(.small-gold-label),
+    .font-display-serif span:not(.small-gold-label),
+    .font-serif-editorial span:not(.small-gold-label) {
+      font-family: 'Playfair Display', Georgia, serif !important;
+      font-weight: 500;
       letter-spacing: -0.01em;
     }
 
-    /* Hero heading: 38–46px */
     .hero-h1-clamp {
-      font-size: clamp(2.375rem, 9.5vw, 2.875rem); /* 38px–46px */
+      font-size: clamp(2.375rem, 9.5vw, 2.875rem);
       line-height: 1.08;
       letter-spacing: -0.015em;
     }
 
-    /* Section heading: 30–36px */
     .section-h2-clamp {
-      font-size: clamp(1.875rem, 7.8vw, 2.25rem); /* 30px–36px */
+      font-size: clamp(1.875rem, 7.8vw, 2.25rem);
       line-height: 1.12;
       letter-spacing: -0.01em;
     }
 
-    /* Course heading: 23–28px */
     .mobile-course-h3 {
-      font-size: clamp(1.4375rem, 6.2vw, 1.75rem); /* 23px–28px */
+      font-size: clamp(1.4375rem, 6.2vw, 1.75rem);
       line-height: 1.16;
     }
 
-    /* Supporting labels: 11–13px */
     .small-gold-label {
-      font-size: 0.75rem; /* 12px (11–13px range) */
+      font-size: 0.75rem;
       letter-spacing: 0.14em;
       line-height: 1.4;
     }

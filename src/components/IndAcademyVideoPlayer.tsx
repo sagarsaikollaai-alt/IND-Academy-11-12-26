@@ -971,7 +971,7 @@ export const IndAcademyVideoPlayer: React.FC<IndAcademyVideoPlayerProps> = ({
               </div>
 
               {/* Current Time and Duration */}
-              <div className="font-mono text-[10px] sm:text-[11px] md:text-xs tabular-nums text-[#FFFFFF] tracking-tight whitespace-nowrap">
+              <div className="text-[10px] sm:text-[11px] md:text-xs tabular-nums text-[#FFFFFF] tracking-tight whitespace-nowrap">
                 <span className="text-[#C6A15B] font-semibold">
                   {formatTime(currentTime)}
                 </span>
