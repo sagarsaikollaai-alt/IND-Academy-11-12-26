@@ -8,9 +8,10 @@ import {
   Wrench,
   X,
 } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 import { CourseData, PageId } from '../data/siteData';
 import { ResilientImage } from './ResilientImage';
-import { InteractiveTiltCard } from './MotionPrimitives';
+import { APPLE_SPRING, InteractiveTiltCard } from './MotionPrimitives';
 
 interface CourseCardProps {
   course: CourseData;
@@ -157,142 +158,152 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         </article>
       </InteractiveTiltCard>
 
-      {/* QUICK LOOK MODAL (Progressive Disclosure: Full Skills, Tools & Outcomes on demand) */}
-      {showFullDetailsModal && (
-        <div
-          onClick={() => setShowFullDetailsModal(false)}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#0B0B0B]/82 backdrop-blur-sm p-0 sm:p-6"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={`modal-title-${course.id}`}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="max-w-2xl w-full rounded-t-3xl sm:rounded-3xl bg-[#F8F6F0] text-[#171717] border border-[#E7E2D8] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+      {/* QUICK LOOK MODAL (Progressive Disclosure with Smooth Apple Spring Morph) */}
+      <AnimatePresence>
+        {showFullDetailsModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            onClick={() => setShowFullDetailsModal(false)}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#0B0B0B]/75 backdrop-blur-md p-0 sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`modal-title-${course.id}`}
           >
-            {/* Modal Header */}
-            <div className="px-5 md:px-7 py-4 md:py-5 bg-[#171717] text-[#F8F6F0] border-b border-[#333333] flex items-center justify-between gap-3 shrink-0">
-              <div>
-                <span className="small-gold-label text-[#C6A15B] block mb-0.5">
-                  Track {course.code} · {course.mode}
-                </span>
-                <h3
-                  id={`modal-title-${course.id}`}
-                  className="font-display-serif text-xl md:text-2xl font-medium text-[#F8F6F0]"
+            <motion.div
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.97 }}
+              transition={APPLE_SPRING}
+              onClick={(e) => e.stopPropagation()}
+              className="max-w-2xl w-full rounded-t-3xl sm:rounded-3xl bg-[#F8F6F0] text-[#171717] border border-[#E7E2D8] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.45)] overflow-hidden max-h-[90vh] flex flex-col"
+            >
+              {/* Modal Header */}
+              <div className="px-5 md:px-7 py-4 md:py-5 bg-[#171717] text-[#F8F6F0] border-b border-[#333333] flex items-center justify-between gap-3 shrink-0">
+                <div>
+                  <span className="small-gold-label text-[#C6A15B] block mb-0.5">
+                    Track {course.code} · {course.mode}
+                  </span>
+                  <h3
+                    id={`modal-title-${course.id}`}
+                    className="font-display-serif text-xl md:text-2xl font-medium text-[#F8F6F0]"
+                  >
+                    {course.title}
+                  </h3>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowFullDetailsModal(false)}
+                  className="w-9 h-9 rounded-full border border-[#333333] bg-[#0B0B0B] hover:border-[#C6A15B] text-[#F8F6F0] flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  aria-label="Close modal"
                 >
-                  {course.title}
-                </h3>
+                  <X className="w-4 h-4" />
+                </button>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setShowFullDetailsModal(false)}
-                className="w-9 h-9 rounded-full border border-[#333333] bg-[#0B0B0B] hover:border-[#C6A15B] text-[#F8F6F0] flex items-center justify-center transition-colors cursor-pointer shrink-0"
-                aria-label="Close modal"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+              {/* Concise Visual Modal Body */}
+              <div className="p-5 md:p-7 overflow-y-auto overscroll-contain space-y-5">
+                <p className="text-[15px] text-[#171717]/85 leading-relaxed">
+                  {conciseTagline}
+                </p>
 
-            {/* Concise Visual Modal Body */}
-            <div className="p-5 md:p-7 overflow-y-auto overscroll-contain space-y-5">
-              <p className="text-[15px] text-[#171717]/85 leading-relaxed">
-                {conciseTagline}
-              </p>
-
-              {/* Topics */}
-              <div>
-                <div className="flex items-center gap-2 mb-2.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#A98747]" />
-                  <span className="small-gold-label text-[#A98747]">
-                    Core Topics ({course.keyTopics.length})
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {course.keyTopics.map((topic) => (
-                    <span
-                      key={topic}
-                      className="px-2.5 py-1 rounded-full bg-[#FFFFFF] border border-[#E7E2D8] text-xs font-medium text-[#171717]"
-                    >
-                      {topic}
+                {/* Topics */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <Sparkles className="w-3.5 h-3.5 text-[#A98747]" />
+                    <span className="small-gold-label text-[#A98747]">
+                      Core Topics ({course.keyTopics.length})
                     </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Tools */}
-              <div className="pt-4 border-t border-[#E7E2D8]">
-                <div className="flex items-center gap-2 mb-2.5">
-                  <Wrench className="w-3.5 h-3.5 text-[#A98747]" />
-                  <span className="small-gold-label text-[#A98747]">
-                    Tools Practiced
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {course.softwareAndTools.map((tool) => (
-                    <div
-                      key={tool.name}
-                      className="p-2.5 rounded-xl bg-[#FFFFFF] border border-[#E7E2D8]"
-                    >
-                      <span className="block font-semibold text-xs text-[#171717]">
-                        {tool.name}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {course.keyTopics.map((topic) => (
+                      <span
+                        key={topic}
+                        className="px-2.5 py-1 rounded-full bg-[#FFFFFF] border border-[#E7E2D8] text-xs font-medium text-[#171717]"
+                      >
+                        {topic}
                       </span>
-                      <span className="block text-[10px] text-[#A98747]">
-                        {tool.category}
-                      </span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tools */}
+                <div className="pt-4 border-t border-[#E7E2D8]">
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <Wrench className="w-3.5 h-3.5 text-[#A98747]" />
+                    <span className="small-gold-label text-[#A98747]">
+                      Tools Practiced
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {course.softwareAndTools.map((tool) => (
+                      <div
+                        key={tool.name}
+                        className="p-2.5 rounded-xl bg-[#FFFFFF] border border-[#E7E2D8]"
+                      >
+                        <span className="block font-semibold text-xs text-[#171717]">
+                          {tool.name}
+                        </span>
+                        <span className="block text-[10px] text-[#A98747]">
+                          {tool.category}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Key Outcomes */}
+                <div className="pt-4 border-t border-[#E7E2D8]">
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <Layers className="w-3.5 h-3.5 text-[#A98747]" />
+                    <span className="small-gold-label text-[#A98747]">
+                      What You Ship
+                    </span>
+                  </div>
+                  <ul className="space-y-2 text-xs sm:text-sm text-[#171717]/85">
+                    {course.learningOutcomes.slice(0, 4).map((outcome, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#A98747] shrink-0 mt-0.5" />
+                        <span>{outcome}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
 
-              {/* Key Outcomes */}
-              <div className="pt-4 border-t border-[#E7E2D8]">
-                <div className="flex items-center gap-2 mb-2.5">
-                  <Layers className="w-3.5 h-3.5 text-[#A98747]" />
-                  <span className="small-gold-label text-[#A98747]">
-                    What You Ship
-                  </span>
-                </div>
-                <ul className="space-y-2 text-xs sm:text-sm text-[#171717]/85">
-                  {course.learningOutcomes.slice(0, 4).map((outcome, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#A98747] shrink-0 mt-0.5" />
-                      <span>{outcome}</span>
-                    </li>
-                  ))}
-                </ul>
+              {/* Modal Footer */}
+              <div className="px-5 md:px-7 py-3.5 bg-[#FFFFFF] border-t border-[#E7E2D8] grid grid-cols-2 gap-2.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFullDetailsModal(false);
+                    onNavigate(course.slug);
+                  }}
+                  className="min-h-[44px] px-4 py-2.5 rounded-xl border border-[#171717] hover:bg-[#F8F6F0] text-xs font-semibold uppercase tracking-[0.12em] text-[#171717] transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span>Full Syllabus</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFullDetailsModal(false);
+                    onNavigate('enrollment', course.id);
+                  }}
+                  className="min-h-[44px] px-4 py-2.5 rounded-xl bg-[#171717] hover:bg-[#C6A15B] text-[#F8F6F0] hover:text-[#171717] text-xs font-semibold uppercase tracking-[0.12em] transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span>Enquire Now</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="px-5 md:px-7 py-3.5 bg-[#FFFFFF] border-t border-[#E7E2D8] grid grid-cols-2 gap-2.5 shrink-0">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowFullDetailsModal(false);
-                  onNavigate(course.slug);
-                }}
-                className="min-h-[44px] px-4 py-2.5 rounded-xl border border-[#171717] hover:bg-[#F8F6F0] text-xs font-semibold uppercase tracking-[0.12em] text-[#171717] transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>Full Syllabus</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setShowFullDetailsModal(false);
-                  onNavigate('enrollment', course.id);
-                }}
-                className="min-h-[44px] px-4 py-2.5 rounded-xl bg-[#171717] hover:bg-[#C6A15B] text-[#F8F6F0] hover:text-[#171717] text-xs font-semibold uppercase tracking-[0.12em] transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>Enquire Now</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

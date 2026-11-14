@@ -9,13 +9,33 @@ import {
 } from 'motion/react';
 
 /**
+ * Apple-inspired critically damped spring & easing constants:
+ * Fast initial response, smooth deceleration, zero dramatic bounce.
+ */
+export const APPLE_SPRING = {
+  type: 'spring' as const,
+  stiffness: 260,
+  damping: 32,
+  mass: 0.9,
+};
+
+export const APPLE_SOFT_SPRING = {
+  type: 'spring' as const,
+  stiffness: 180,
+  damping: 28,
+  mass: 1,
+};
+
+export const APPLE_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+/**
  * Top Viewport Scroll Progress Indicator in Champagne Gold (#C6A15B)
  */
 export const ScrollProgressBar: React.FC = () => {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
-    stiffness: 110,
-    damping: 28,
+    stiffness: 140,
+    damping: 30,
     restDelta: 0.001,
   });
 
@@ -29,7 +49,7 @@ export const ScrollProgressBar: React.FC = () => {
 };
 
 /**
- * Hairline Divider that Draws In From the Left on Scroll
+ * Hairline Divider that Draws In Smoothly on Scroll
  */
 export const HairlineDivider: React.FC<{
   dark?: boolean;
@@ -42,11 +62,13 @@ export const HairlineDivider: React.FC<{
   return (
     <div ref={ref} className={`w-full overflow-hidden ${className}`}>
       <motion.div
-        initial={prefersReducedMotion ? { scaleX: 1 } : { scaleX: 0 }}
+        initial={prefersReducedMotion ? { scaleX: 1, opacity: 1 } : { scaleX: 0, opacity: 0.4 }}
         animate={
-          isInView || prefersReducedMotion ? { scaleX: 1 } : { scaleX: 0 }
+          isInView || prefersReducedMotion
+            ? { scaleX: 1, opacity: 1 }
+            : { scaleX: 0, opacity: 0.4 }
         }
-        transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.85, ease: APPLE_EASE }}
         className={`h-px w-full origin-left ${
           dark ? 'bg-[#333333]' : 'bg-[#E7E2D8]'
         }`}
@@ -56,18 +78,18 @@ export const HairlineDivider: React.FC<{
 };
 
 /**
- * Controlled Layered Parallax Wrapper (0.03x - 0.15x equivalent)
+ * Controlled Layered Parallax Wrapper
  */
 interface ParallaxLayerProps {
   children: React.ReactNode;
-  speedY?: number; // e.g., -28 to +28 px
+  speedY?: number;
   speedX?: number;
   className?: string;
 }
 
 export const ParallaxLayer: React.FC<ParallaxLayerProps> = ({
   children,
-  speedY = -20,
+  speedY = -16,
   speedX = 0,
   className = '',
 }) => {
@@ -91,8 +113,8 @@ export const ParallaxLayer: React.FC<ParallaxLayerProps> = ({
     prefersReducedMotion || isMobile ? [0, 0] : [-speedX, speedX]
   );
 
-  const y = useSpring(rawY, { stiffness: 100, damping: 28 });
-  const x = useSpring(rawX, { stiffness: 100, damping: 28 });
+  const y = useSpring(rawY, { stiffness: 120, damping: 30 });
+  const x = useSpring(rawX, { stiffness: 120, damping: 30 });
 
   return (
     <motion.div ref={ref} style={{ y, x }} className={className}>
@@ -102,7 +124,7 @@ export const ParallaxLayer: React.FC<ParallaxLayerProps> = ({
 };
 
 /**
- * Subtle Upright Serif Watermark Drift (0.03x - 0.05x)
+ * Subtle Upright Serif Watermark Drift
  */
 interface ParallaxBackdropTextProps {
   text: string;
@@ -126,7 +148,7 @@ export const ParallaxBackdropText: React.FC<ParallaxBackdropTextProps> = ({
     offset: ['start end', 'end start'],
   });
 
-  const xRange = direction === 'left' ? ['4%', '-6%'] : ['-6%', '4%'];
+  const xRange = direction === 'left' ? ['3%', '-4%'] : ['-4%', '3%'];
   const x = useTransform(
     scrollYProgress,
     [0, 1],
@@ -152,7 +174,8 @@ export const ParallaxBackdropText: React.FC<ParallaxBackdropTextProps> = ({
 };
 
 /**
- * Card Lift Wrapper (Lifts 6px with Gold Border Transition on Hover)
+ * Apple-Style Weighted Card Wrapper:
+ * Subtle spring lift + scale-in on hover/tap with soft ambient shadow and zero bounce.
  */
 interface InteractiveTiltCardProps {
   children: React.ReactNode;
@@ -164,12 +187,24 @@ export const InteractiveTiltCard: React.FC<InteractiveTiltCardProps> = ({
   children,
   className = '',
 }) => {
+  const prefersReducedMotion = useReducedMotion();
+
+  if (prefersReducedMotion) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
-    <div
-      className={`transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:hover:-translate-y-1.5 ${className}`}
+    <motion.div
+      initial={{ opacity: 0, y: 14, scale: 0.985 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.12 }}
+      whileHover={{ y: -4, scale: 1.006 }}
+      whileTap={{ scale: 0.992 }}
+      transition={APPLE_SPRING}
+      className={`will-change-transform ${className}`}
     >
       {children}
-    </div>
+    </motion.div>
   );
 };
 
@@ -220,7 +255,7 @@ interface ScrollRevealBlockProps {
 }
 
 /**
- * Supporting Text & Card Reveal (Fades up 24px on desktop, lighter 14px on mobile)
+ * Apple-Style Weighted Slide-Up + Subtle Scale-In Reveal
  */
 export const ScrollRevealBlock: React.FC<ScrollRevealBlockProps> = ({
   children,
@@ -236,27 +271,26 @@ export const ScrollRevealBlock: React.FC<ScrollRevealBlockProps> = ({
     return <div className={className}>{children}</div>;
   }
 
-  const dist = isMobile ? 14 : 24;
+  const dist = isMobile ? 12 : 18;
   const initialOffset =
     direction === 'up'
-      ? { opacity: 0, y: dist }
+      ? { opacity: 0, y: dist, scale: 0.985 }
       : direction === 'left'
-        ? { opacity: 0, x: -dist }
+        ? { opacity: 0, x: -dist, scale: 0.985 }
         : direction === 'right'
-          ? { opacity: 0, x: dist }
-          : { opacity: 0 };
+          ? { opacity: 0, x: dist, scale: 0.985 }
+          : { opacity: 0, scale: 0.99 };
 
   return (
     <motion.div
       initial={initialOffset}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, amount: isMobile ? 0.08 : 0.15 }}
+      whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: isMobile ? 0.08 : 0.14 }}
       transition={{
-        duration: isMobile ? 0.55 : 0.85,
-        delay: isMobile ? Math.min(delay, 0.1) : delay,
-        ease: [0.16, 1, 0.3, 1],
+        ...APPLE_SPRING,
+        delay: isMobile ? Math.min(delay, 0.08) : delay,
       }}
-      className={className}
+      className={`will-change-transform ${className}`}
     >
       {children}
     </motion.div>
@@ -279,9 +313,7 @@ interface EditorialRevealTitleProps {
 }
 
 /**
- * Upright Playfair Display Heading Reveal
- * - Word by word from behind a mask, rising 100% with 65ms stagger and soft blur-to-sharp fade
- * - NEVER italic. Emphasis comes strictly from Gold color (#A98747 on light, #C6A15B on dark)
+ * Upright Playfair Display Heading Reveal with Smooth Critically-Damped Spring Physics
  */
 export const EditorialRevealTitle: React.FC<EditorialRevealTitleProps> = ({
   segments,
@@ -319,24 +351,19 @@ export const EditorialRevealTitle: React.FC<EditorialRevealTitleProps> = ({
                     <motion.span
                       initial={
                         prefersReducedMotion
-                          ? { opacity: 1, y: '0%', filter: 'blur(0px)' }
-                          : isMobile
-                            ? { opacity: 0, y: '65%' }
-                            : { opacity: 0, y: '100%', filter: 'blur(4px)' }
+                          ? { opacity: 1, y: 0, scale: 1 }
+                          : { opacity: 0, y: isMobile ? 12 : 18, scale: 0.98 }
                       }
                       animate={
                         isInView || prefersReducedMotion
-                          ? { opacity: 1, y: '0%', filter: 'blur(0px)' }
-                          : isMobile
-                            ? { opacity: 0, y: '65%' }
-                            : { opacity: 0, y: '100%', filter: 'blur(4px)' }
+                          ? { opacity: 1, y: 0, scale: 1 }
+                          : { opacity: 0, y: isMobile ? 12 : 18, scale: 0.98 }
                       }
                       transition={{
-                        duration: isMobile ? 0.55 : 0.8,
-                        delay: currentIndex * (isMobile ? 0.04 : 0.065),
-                        ease: [0.16, 1, 0.3, 1],
+                        ...APPLE_SPRING,
+                        delay: currentIndex * (isMobile ? 0.025 : 0.04),
                       }}
-                      className={`inline-block font-display-serif font-medium not-italic ${goldColorClass}`}
+                      className={`inline-block font-display-serif font-medium not-italic will-change-transform ${goldColorClass}`}
                     >
                       {word}
                     </motion.span>
@@ -362,7 +389,7 @@ interface ParallaxImageFrameProps {
 }
 
 /**
- * Image Frame with Clip-Path Wipe Reveal + 0.08x - 0.12x Vertical Glide Parallax + 5% Slow Hover Zoom
+ * Image Frame with Smooth Scale-In + Weighted Spring Glide + Soft Ambient Shadow
  */
 export const ParallaxImageFrame: React.FC<ParallaxImageFrameProps> = ({
   src,
@@ -375,58 +402,40 @@ export const ParallaxImageFrame: React.FC<ParallaxImageFrameProps> = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.12 });
   const prefersReducedMotion = useReducedMotion();
-  const isMobile =
-    typeof window !== 'undefined' && window.innerWidth < 768;
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start end', 'end start'],
-  });
-
-  const rawY = useTransform(
-    scrollYProgress,
-    [0, 1],
-    prefersReducedMotion || isMobile ? ['0%', '0%'] : ['-8%', '8%']
-  );
-  const y = useSpring(rawY, { stiffness: 100, damping: 28 });
 
   return (
     <figure ref={containerRef} className={`group relative ${className}`}>
       <motion.div
         initial={
           prefersReducedMotion
-            ? { clipPath: 'inset(0% 0% 0% 0%)' }
-            : isMobile
-              ? { opacity: 0, x: -10 }
-              : { clipPath: 'inset(14% 0% 0% 0%)' }
+            ? { opacity: 1, y: 0, scale: 1 }
+            : { opacity: 0, y: 16, scale: 0.985 }
         }
         animate={
           isInView || prefersReducedMotion
-            ? { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, x: 0 }
-            : isMobile
-              ? { opacity: 0, x: -10 }
-              : { clipPath: 'inset(14% 0% 0% 0%)' }
+            ? { opacity: 1, y: 0, scale: 1 }
+            : { opacity: 0, y: 16, scale: 0.985 }
         }
-        transition={{ duration: isMobile ? 0.6 : 1.05, ease: [0.16, 1, 0.3, 1] }}
-        className={`relative overflow-hidden rounded-2xl border border-[#E7E2D8] bg-[#171717] ${aspectClass}`}
+        transition={APPLE_SOFT_SPRING}
+        className={`relative overflow-hidden rounded-3xl border border-[#E7E2D8] bg-[#171717] shadow-[0_20px_50px_-20px_rgba(23,23,23,0.16)] ${aspectClass}`}
       >
-        <motion.img
+        <img
           src={src}
           alt={alt}
-          style={isMobile ? undefined : { y, scale: 1.1 }}
           referrerPolicy="no-referrer"
           loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] md:group-hover:scale-115"
+          className="w-full h-full object-cover"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0B0B0B]/40 via-transparent to-transparent" />
 
         {badgeText && (
-          <div className="absolute top-3 left-3 md:top-4 md:left-4 rounded-lg border border-[#C6A15B]/50 bg-[#171717]/85 backdrop-blur-md px-3 py-1 md:px-3.5 md:py-1.5 text-[10px] md:text-[11px] font-medium uppercase tracking-[0.16em] md:tracking-[0.2em] text-[#C6A15B]">
+          <div className="absolute top-3 left-3 md:top-4 md:left-4 rounded-full border border-[#C6A15B]/45 bg-[#171717]/80 backdrop-blur-md px-3 py-1 text-[10px] md:text-[11px] font-medium uppercase tracking-[0.16em] text-[#C6A15B]">
             {badgeText}
           </div>
         )}
       </motion.div>
       {caption && (
-        <figcaption className="mt-2.5 md:mt-3 text-[11px] md:text-xs font-medium uppercase tracking-[0.14em] md:tracking-[0.16em] text-[#8B8983] flex items-center justify-between">
+        <figcaption className="mt-2.5 md:mt-3 text-[11px] md:text-xs font-medium uppercase tracking-[0.14em] text-[#8B8983] flex items-center justify-between">
           <span>{caption}</span>
           <span className="w-8 h-px bg-[#C6A15B]" aria-hidden="true" />
         </figcaption>
@@ -479,98 +488,7 @@ export const HandDrawnDoodle: React.FC<HandDrawnDoodleProps> = ({
           strokeLinecap="round"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={drawState}
-          transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-        />
-      </svg>
-    );
-  }
-
-  if (variant === 'lightbulb') {
-    return (
-      <svg
-        ref={ref}
-        viewBox="0 0 100 110"
-        fill="none"
-        className={`overflow-visible ${className}`}
-        aria-hidden="true"
-      >
-        <motion.path
-          d="M 36 72 C 26 60, 22 44, 30 30 C 38 18, 62 18, 70 30 C 78 44, 74 60, 64 72 L 60 80 L 40 80 Z"
-          stroke={strokeColor}
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={drawState}
-          transition={{ duration: 1.3, ease: [0.16, 1, 0.3, 1] }}
-        />
-      </svg>
-    );
-  }
-
-  if (variant === 'notebook-pencil') {
-    return (
-      <svg
-        ref={ref}
-        viewBox="0 0 150 100"
-        fill="none"
-        className={`overflow-visible ${className}`}
-        aria-hidden="true"
-      >
-        <motion.path
-          d="M 18 24 C 36 20, 56 22, 72 28 L 72 82 C 56 76, 36 74, 18 78 Z M 72 28 C 88 22, 108 20, 126 24 L 126 78 C 108 74, 88 76, 72 82 Z"
-          stroke={strokeColor}
-          strokeWidth="1.6"
-          strokeLinejoin="round"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={drawState}
-          transition={{ duration: 1.3, ease: [0.16, 1, 0.3, 1] }}
-        />
-      </svg>
-    );
-  }
-
-  if (variant === 'graduation-cap') {
-    return (
-      <svg
-        ref={ref}
-        viewBox="0 0 160 90"
-        fill="none"
-        className={`overflow-visible ${className}`}
-        aria-hidden="true"
-      >
-        <motion.path
-          d="M 74 28 L 112 14 L 148 28 L 112 42 Z M 88 34 L 88 50 C 88 56, 136 56, 136 50 L 136 34 M 142 31 L 142 54"
-          stroke={strokeColor}
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={drawState}
-          transition={{ duration: 1.3, ease: [0.16, 1, 0.3, 1] }}
-        />
-      </svg>
-    );
-  }
-
-  if (variant === 'cta-arrow') {
-    return (
-      <svg
-        ref={ref}
-        viewBox="0 0 120 60"
-        fill="none"
-        className={`overflow-visible ${className}`}
-        aria-hidden="true"
-      >
-        <motion.path
-          d="M 8 16 C 38 6, 66 48, 106 32 M 94 22 L 108 31 L 96 43"
-          stroke={strokeColor}
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={drawState}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1.1, ease: APPLE_EASE }}
         />
       </svg>
     );

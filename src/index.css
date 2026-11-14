@@ -106,6 +106,15 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /* Apple-grade weighted, smooth cubic-bezier easing on all interactive elements */
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
   /* Mobile Typography Scale (< 768px) — Strictly uses the same 2 fonts (Playfair Display + Apple Font) */
   @media (max-width: 767px) {
     html,

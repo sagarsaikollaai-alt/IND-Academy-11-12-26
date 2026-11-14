@@ -60,10 +60,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
 
   return (
     <header
-      className={`sticky top-0 z-40 transition-all duration-300 border-b border-[#E7E2D8] ${
+      className={`sticky top-0 z-40 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] border-b border-[#E7E2D8] ${
         isScrolled
-          ? 'bg-[#F8F6F0]/92 backdrop-blur-md shadow-[0_8px_24px_-16px_rgba(23,23,23,0.1)]'
-          : 'bg-[#F8F6F0]'
+          ? 'bg-[#F8F6F0]/85 backdrop-blur-xl shadow-[0_10px_30px_-18px_rgba(23,23,23,0.12)]'
+          : 'bg-[#F8F6F0]/95 backdrop-blur-md'
       }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-6 px-5 md:px-6 h-[68px] md:h-20">
@@ -124,13 +124,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             <AnimatePresence>
               {programsDropdownOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.18 }}
+                  initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.985 }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 280,
+                    damping: 30,
+                    mass: 0.85,
+                  }}
                   className="absolute top-full left-0 pt-3 w-[380px] z-50"
                 >
-                  <div className="rounded-2xl bg-[#FFFFFF] border border-[#E7E2D8] shadow-[0_24px_50px_-16px_rgba(23,23,23,0.14)] p-3 space-y-1">
+                  <div className="rounded-2xl bg-[#FFFFFF]/95 backdrop-blur-xl border border-[#E7E2D8] shadow-[0_24px_50px_-16px_rgba(23,23,23,0.14)] p-3 space-y-1">
                     <div className="px-3 py-1.5 border-b border-[#E7E2D8] flex items-center justify-between">
                       <span className="small-gold-label text-[#A98747]">
                         All 4 Programs

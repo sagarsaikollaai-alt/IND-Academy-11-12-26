@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import {
   ContactConfig,
   COURSES_DATA,
@@ -152,8 +153,21 @@ export default function App() {
       {/* Single Clean Navigation Bar */}
       <Navbar currentPage={currentPage} onNavigate={handleNavigate} />
 
-      {/* Active Page Content */}
-      <main className="flex-1">{renderPage()}</main>
+      {/* Active Page Content with Smooth Apple Morph Transition */}
+      <main className="flex-1">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPage}
+            initial={{ opacity: 0, y: 10, scale: 0.994 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.996 }}
+            transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+            className="will-change-transform"
+          >
+            {renderPage()}
+          </motion.div>
+        </AnimatePresence>
+      </main>
 
       {/* Footer with Separate IND Academy and Brightlume Digital Media Logos */}
       <Footer
